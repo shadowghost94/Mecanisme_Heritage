@@ -14,9 +14,9 @@ public:
     TableauEntier(int Dimension);
     TableauEntier(const TableauEntier& recop);      //constructeur par recopie
     int& operator [] (int R);                       //redefinition de l'operateur []
-    void Affichage()
+
+    void afficheur()                                  //fonction d'affichage de tableau
     {
-        cout<<"Affichage des éléments du tableau..."<<endl;
         for(int i=0; i<d; i++)cout<<t[i]<<" ";
         cout<<endl;
     }
@@ -24,25 +24,49 @@ public:
 
 int main()
 {
-    TableauEntier T(50);
-    T.Affichage();
-    T[49]=8;
-    cout<<T[49]<<endl;
+    TableauEntier objet0(5);
+    cout<<"Affichage des valeurs juste après création de l'objet histoire d'avoir une idée de son contenu."<<endl;
+    objet0.afficheur();
 
-    TableauEntier Y(T);
-    Y.Affichage();
+    cout<<"Maintenant nous allons attribuer des valeurs à chaque éléments..."<<endl;
+    objet0[0]=0;
+    objet0[1]=5;
+    objet0[2]=3;
+    objet0[3]=1;
+    objet0[4]=2;
+
+    cout<<"Affichage de nouveau du contenu après remplissage..."<<endl;
+    objet0.afficheur();
+    cout<<endl;
+
+    cout<<"création d'un deuxième objet et test du constructeur par recopie "<<endl;
+    TableauEntier objet1(objet0);
+    cout<<"Affichage du contenu de l'objet crée dernièrement "<<endl;
+    objet1.afficheur();
+
     return 0;
 }
 
-/* fonction membre privée d'initialisation de t et d */
+TableauEntier::TableauEntier(int Dimension)
+{
+    alloue(Dimension);
+}
+
+TableauEntier::TableauEntier(const TableauEntier& recop)
+{
+
+    alloue(d= recop.d);
+
+    for(int i=0; i<d; i++)t[i]=recop.t[i];
+
+}
+
 void TableauEntier::alloue(int Dim)
 {
     t= new int [d=Dim];
-
     for(int i=0; i<d; i++)t[i]=0;
 }
 
-/* fonction membre privée qui permet de vérifier la validité d'un rang */
 int TableauEntier::ValideRang(int Index) const
 {
     if(Index<0 || Index>=d)
@@ -54,42 +78,19 @@ int TableauEntier::ValideRang(int Index) const
     return Index;
 }
 
-/*fonction membre privée de surdéfinition de l'opérateur d'affectation */
-TableauEntier& TableauEntier::operator = (const TableauEntier& Source)
-{
-    /*
-
-     *on supprime l'ancienne espace mémoire sur laquelle pointait le t de l'objet implicite
-     *on affecte au d de l'objet implicite la dimension d de l'objet explicite
-     * on alloue un nouveau tableau de dimensio d et on fait pointé t sur lui
-
-     */
-
-    delete t;
-    d=Source.d;
-    t= new int [d];
-
-    for(int i=0; i<d; i++)
-    {
-        t[i]=Source.t[i];
-    }
-
-    return *this;
-};
-
-TableauEntier::TableauEntier(int Dimension)
-{
-    t= new int [d=Dimension];
-};
-
-TableauEntier::TableauEntier(const TableauEntier& recop)
-{
-    t= new int [d= recop.d];
-
-    for(int i=0; i<d; i++)t[i]=recop.t[i];
-};
-
-int& TableauEntier::operator [] (int R)
+inline int& TableauEntier::operator [] (int R)
 {
     return t[ValideRang(R)];
-};
+}
+
+TableauEntier& TableauEntier::operator = (const TableauEntier& Source)
+{
+    delete t;
+    d= Source.d;
+
+    alloue(d);
+
+    for(int i=0; i<d; i++)t[i]=Source.t[i];
+
+    return *this;
+}
